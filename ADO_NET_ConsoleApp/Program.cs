@@ -1,7 +1,9 @@
-﻿using ADO_NET_Task.Models;
+﻿using ADO_NET_Task.Enums;
+using ADO_NET_Task.Models;
 using ADO_NET_Task.Repositories;
 using ADO_NET_Task.Repositories.Interfaces;
 using Microsoft.Data.SqlClient;
+using System;
 using System.Data.Common;
 using System.Threading.Tasks;
 
@@ -58,13 +60,33 @@ namespace ADO_NET_ConsoleApp
 
             //productRepository.Delete(1003);
 
-            var product = productRepository.GetById(2002);
-            product.Name = "Laptop Asus";
-            product.Description = "Workstation portative Asus";
+            //var product = productRepository.GetById(2002);
+            //product.Name = "Laptop Asus";
+            //product.Description = "Workstation portative Asus";
 
-            productRepository.Update(product);
+            //productRepository.Update(product);
 
             var products = productRepository.GetAll();
+
+            var order = new Order()
+            {
+                Status = Status.Done,
+                CreatedDate = new DateTime(2021, 9, 11),
+                UpdatedDate = new DateTime(2022, 7, 8),
+                ProductId = 2002,
+            };
+
+            orderRepository.Insert(order);
+
+            //orderRepository.Delete(3);
+
+            //var order = orderRepository.GetById(2);
+            //order.Status = Status.InProgress;
+            //order.UpdatedDate = DateTime.Now;
+
+            //orderRepository.Update(order);
+
+            var orders = orderRepository.GetAll();
         }
     }
 }
