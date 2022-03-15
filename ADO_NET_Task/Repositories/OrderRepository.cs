@@ -8,6 +8,7 @@ namespace ADO_NET_Task.Repositories
 {
     public class OrderRepository : IGenericRepository<Order>
     {
+        const string queryString = "SELECT * FROM dbo.Orders";
         private readonly DbProviderFactory providerFactory;
         private readonly string connectionString;
 
@@ -23,47 +24,16 @@ namespace ADO_NET_Task.Repositories
             {
                 DbConnection? connection = providerFactory.CreateConnection();
 
-                if (connection == null)
+                if (connection is null)
                 {
-                    return;
+                    throw new ArgumentNullException(nameof(connection));
                 }
 
                 connection.ConnectionString = connectionString;
 
                 using (connection)
                 {
-                    string queryString =
-                        "SELECT * FROM dbo.Orders";
-
-                    DbCommand? command = providerFactory.CreateCommand();
-
-                    if (command == null)
-                    {
-                        return;
-                    }
-
-                    command.CommandText = queryString;
-                    command.Connection = connection;
-
-                    DbDataAdapter? adapter = providerFactory.CreateDataAdapter();
-
-                    if (adapter == null)
-                    {
-                        return;
-                    }
-
-                    adapter.SelectCommand = command;
-
-                    DbCommandBuilder? builder = providerFactory.CreateCommandBuilder();
-
-                    if (builder == null)
-                    {
-                        return;
-                    }
-
-                    builder.DataAdapter = adapter;
-
-                    adapter.DeleteCommand = builder.GetDeleteCommand();
+                    var adapter = BuildDbAdapter(connection);
 
                     DataTable table = new DataTable();
                     adapter.Fill(table);
@@ -85,54 +55,36 @@ namespace ADO_NET_Task.Repositories
 
         public IEnumerable<Order> GetAll()
         {
-            var orders = new List<Order>();
-
             try
             {
                 using (var connection = providerFactory.CreateConnection())
                 {
-                    if (connection != null)
+                    if (connection is null)
                     {
-                        connection.ConnectionString = connectionString;
+                        throw new ArgumentNullException(nameof(connection));
+                    }
 
-                        using (connection)
-                        {
-                            string queryString = "SELECT * FROM dbo.Orders";
+                    connection.ConnectionString = connectionString;
 
-                            DbCommand? command = providerFactory.CreateCommand();
+                    using (connection)
+                    {
+                        var adapter = BuildDbAdapter(connection);
 
-                            if (command == null)
-                            {
-                                return orders;
-                            }
+                        DataTable table = new DataTable("Orders");
+                        adapter.Fill(table);
 
-                            command.CommandText = queryString;
-                            command.Connection = connection;
+                        var orders = (from DataRow row in table.Rows
+                                  select new Order()
+                                  {
+                                      Id = Convert.ToInt32(row["Id"]),
+                                      Status = ConvertStrToEnum(row["Status"].ToString() ?? string.Empty),
+                                      CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                                      UpdatedDate = Convert.ToDateTime(row["UpdatedDate"]),
+                                      ProductId = Convert.ToInt32(row["ProductId"]),
+                                  })
+                                  .ToList();
 
-                            DbDataAdapter? adapter = providerFactory.CreateDataAdapter();
-
-                            if (adapter == null)
-                            {
-                                return orders;
-                            }
-
-                            adapter.SelectCommand = command;
-
-                            DataTable table = new DataTable("Orders");
-                            adapter.Fill(table);
-
-                            orders = (from DataRow row in table.Rows
-                                      select new Order()
-                                      {
-                                          Id = Convert.ToInt32(row["Id"]),
-                                          Status = ConvertStrToEnum(row["Status"].ToString() ?? string.Empty),
-                                          CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
-                                          UpdatedDate = Convert.ToDateTime(row["UpdatedDate"]),
-                                          ProductId = Convert.ToInt32(row["ProductId"]),
-                                      }).ToList();
-
-                            return orders;
-                        }
+                        return orders;
                     }
                 }
             }
@@ -140,62 +92,41 @@ namespace ADO_NET_Task.Repositories
             {
                 throw new Exception(ex.Message);
             }
-
-            return orders;
         }
 
         public Order? GetById(object id)
         {
-            var order = new Order();
-
             try
             {
                 using (var connection = providerFactory.CreateConnection())
                 {
-                    if (connection != null)
+                    if (connection is null)
                     {
-                        connection.ConnectionString = connectionString;
+                        throw new ArgumentNullException(nameof(connection));
+                    }
 
-                        using (connection)
-                        {
-                            string queryString = "SELECT * FROM dbo.Orders";
+                    connection.ConnectionString = connectionString;
 
-                            DbCommand? command = providerFactory.CreateCommand();
+                    using (connection)
+                    {
+                        var adapter = BuildDbAdapter(connection);
 
-                            if (command == null)
-                            {
-                                return order;
-                            }
+                        DataTable table = new DataTable("Orders");
+                        adapter.Fill(table);
 
-                            command.CommandText = queryString;
-                            command.Connection = connection;
+                        var order = (from DataRow row in table.Rows
+                                 select new Order()
+                                 {
+                                     Id = Convert.ToInt32(row["Id"]),
+                                     Status = ConvertStrToEnum(row["Status"].ToString() ?? string.Empty),
+                                     CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                                     UpdatedDate = Convert.ToDateTime(row["UpdatedDate"]),
+                                     ProductId = Convert.ToInt32(row["ProductId"]),
+                                 })
+                                  .Where(x => x.Id == Convert.ToInt32(id))
+                                  .Single();
 
-                            DbDataAdapter? adapter = providerFactory.CreateDataAdapter();
-
-                            if (adapter == null)
-                            {
-                                return order;
-                            }
-
-                            adapter.SelectCommand = command;
-
-                            DataTable table = new DataTable("Orders");
-                            adapter.Fill(table);
-
-                            order = (from DataRow row in table.Rows
-                                     select new Order()
-                                     {
-                                         Id = Convert.ToInt32(row["Id"]),
-                                         Status = ConvertStrToEnum(row["Status"].ToString() ?? string.Empty),
-                                         CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
-                                         UpdatedDate = Convert.ToDateTime(row["UpdatedDate"]),
-                                         ProductId = Convert.ToInt32(row["ProductId"]),
-                                     })
-                                      .Where(x => x.Id == Convert.ToInt32(id))
-                                      .Single();
-
-                            return order;
-                        }
+                        return order;
                     }
                 }
             }
@@ -203,8 +134,6 @@ namespace ADO_NET_Task.Repositories
             {
                 throw new Exception(ex.Message);
             }
-
-            return order;
         }
 
         public void Insert(Order obj)
@@ -213,49 +142,16 @@ namespace ADO_NET_Task.Repositories
             {
                 DbConnection? connection = providerFactory.CreateConnection();
 
-                if (connection == null)
+                if (connection is null)
                 {
-                    return;
+                    throw new ArgumentNullException(nameof(connection));
                 }
 
                 connection.ConnectionString = connectionString;
 
                 using (connection)
                 {
-                    string queryString =
-                        "SELECT * FROM dbo.Orders";
-
-                    DbCommand? command = providerFactory.CreateCommand();
-
-                    if (command == null)
-                    {
-                        return;
-                    }
-
-                    command.CommandText = queryString;
-                    command.Connection = connection;
-
-                    DbDataAdapter? adapter = providerFactory.CreateDataAdapter();
-
-                    if (adapter == null)
-                    {
-                        return;
-                    }
-
-                    adapter.SelectCommand = command;
-
-                    DbCommandBuilder? builder = providerFactory.CreateCommandBuilder();
-
-                    if (builder == null)
-                    {
-                        return;
-                    }
-
-                    builder.DataAdapter = adapter;
-
-                    adapter.InsertCommand = builder.GetInsertCommand();
-                    adapter.UpdateCommand = builder.GetUpdateCommand();
-                    adapter.DeleteCommand = builder.GetDeleteCommand();
+                    var adapter = BuildDbAdapter(connection);
 
                     DataTable table = new DataTable();
                     adapter.Fill(table);
@@ -282,47 +178,16 @@ namespace ADO_NET_Task.Repositories
             {
                 DbConnection? connection = providerFactory.CreateConnection();
 
-                if (connection == null)
+                if (connection is null)
                 {
-                    return;
+                    throw new ArgumentNullException(nameof(connection));
                 }
 
                 connection.ConnectionString = connectionString;
 
                 using (connection)
                 {
-                    string queryString =
-                        "SELECT * FROM dbo.Orders";
-
-                    DbCommand? command = providerFactory.CreateCommand();
-
-                    if (command == null)
-                    {
-                        return;
-                    }
-
-                    command.CommandText = queryString;
-                    command.Connection = connection;
-
-                    DbDataAdapter? adapter = providerFactory.CreateDataAdapter();
-
-                    if (adapter == null)
-                    {
-                        return;
-                    }
-
-                    adapter.SelectCommand = command;
-
-                    DbCommandBuilder? builder = providerFactory.CreateCommandBuilder();
-
-                    if (builder == null)
-                    {
-                        return;
-                    }
-
-                    builder.DataAdapter = adapter;
-
-                    adapter.UpdateCommand = builder.GetUpdateCommand();
+                    var adapter = BuildDbAdapter(connection);
 
                     DataTable table = new DataTable();
                     adapter.Fill(table);
@@ -356,6 +221,43 @@ namespace ADO_NET_Task.Repositories
                 "Done" => Status.Done,
                 _ => Status.NotSet
             };
+        }
+
+        private DbDataAdapter BuildDbAdapter(DbConnection connection)
+        {
+            DbCommand? command = providerFactory.CreateCommand();
+
+            if (command is null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
+
+            command.CommandText = queryString;
+            command.Connection = connection;
+
+            DbDataAdapter? adapter = providerFactory.CreateDataAdapter();
+
+            if (adapter is null)
+            {
+                throw new ArgumentNullException(nameof(adapter));
+            }
+
+            adapter.SelectCommand = command;
+
+            DbCommandBuilder? builder = providerFactory.CreateCommandBuilder();
+
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            builder.DataAdapter = adapter;
+
+            adapter.InsertCommand = builder.GetInsertCommand();
+            adapter.UpdateCommand = builder.GetUpdateCommand();
+            adapter.DeleteCommand = builder.GetDeleteCommand();
+
+            return adapter;
         }
     }
 }

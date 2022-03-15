@@ -48,12 +48,12 @@ namespace ADO_NET_ConsoleApp
 
             //var product = new Product()
             //{
-            //    Name = "TV new model",
-            //    Description = "Smart TV Panasonic 65",
-            //    Weight = 9,
-            //    Height = 150,
-            //    Width = 8,
-            //    Length = 200,
+            //    Name = "Laptop new model",
+            //    Description = "HP Pavilion",
+            //    Weight = 2,
+            //    Height = 20,
+            //    Width = 2,
+            //    Length = 30,
             //};
 
             //productRepository.Insert(product);
@@ -68,15 +68,15 @@ namespace ADO_NET_ConsoleApp
 
             var products = productRepository.GetAll();
 
-            var order = new Order()
-            {
-                Status = Status.Done,
-                CreatedDate = new DateTime(2021, 9, 11),
-                UpdatedDate = new DateTime(2022, 7, 8),
-                ProductId = 2002,
-            };
+            //var order = new Order()
+            //{
+            //    Status = Status.Arrived,
+            //    CreatedDate = new DateTime(2019, 9, 11),
+            //    UpdatedDate = new DateTime(2020, 7, 8),
+            //    ProductId = 2,
+            //};
 
-            orderRepository.Insert(order);
+            //orderRepository.Insert(order);
 
             //orderRepository.Delete(3);
 
