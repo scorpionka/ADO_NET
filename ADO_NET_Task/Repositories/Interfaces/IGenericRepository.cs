@@ -8,5 +8,6 @@
         void Update(T obj);
         void Delete(object id);
         IEnumerable<T> GetAllWithFilter(string storedProcedure, Func<T, bool> filter);
+        int DeleteInBulkWithFilter(string storedProcedure, string filter);
     }
 }

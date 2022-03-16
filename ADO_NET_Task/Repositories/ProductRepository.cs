@@ -42,6 +42,11 @@ namespace ADO_NET_Task.Repositories
             }
         }
 
+        public int DeleteInBulkWithFilter(string storedProcedure, string filter)
+        {
+            throw new NotImplementedException(); //not required according to the conditions of the task
+        }
+
         public IEnumerable<Product> GetAll()
         {
             var products = new List<Product>();

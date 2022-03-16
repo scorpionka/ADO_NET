@@ -54,6 +54,81 @@ namespace ADO_NET_Task.Repositories
             }
         }
 
+        /// <summary>
+        /// Delete orders in bulk by some filter
+        /// </summary>
+        /// <param name="storedProcedure">Name of stored procedure</param>
+        /// <param name="filter">Filtering condition</param>
+        /// <returns>Number of deleted orders</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="Exception"></exception>
+        public int DeleteInBulkWithFilter(string storedProcedure, string filter)
+        {
+            try
+            {
+                DbConnection? connection = providerFactory.CreateConnection();
+
+                if (connection is null)
+                {
+                    throw new ArgumentNullException(nameof(connection));
+                }
+
+                connection.ConnectionString = connectionString;
+
+                using (connection)
+                {
+                    DbCommand? command = providerFactory.CreateCommand();
+
+                    if (command is null)
+                    {
+                        throw new ArgumentNullException(nameof(command));
+                    }
+
+                    command.CommandText = storedProcedure;
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Connection = connection;
+
+                    DbDataAdapter? adapter = providerFactory.CreateDataAdapter();
+
+                    if (adapter is null)
+                    {
+                        throw new ArgumentNullException(nameof(adapter));
+                    }
+
+                    adapter.SelectCommand = command;
+
+                    DbCommandBuilder? builder = providerFactory.CreateCommandBuilder();
+
+                    if (builder is null)
+                    {
+                        throw new ArgumentNullException(nameof(builder));
+                    }
+
+                    builder.DataAdapter = adapter;
+
+                    adapter.DeleteCommand = builder.GetDeleteCommand();
+
+                    DataTable table = new DataTable("Orders");
+                    adapter.Fill(table);
+
+                    DataRow[] deleteRow = table.Select(string.IsNullOrWhiteSpace(filter) ? $"Id < 0" : $"{filter}");
+                    
+                    foreach (DataRow row in deleteRow)
+                    {
+                        row.Delete();
+                    }
+
+                    adapter.Update(table);
+
+                    return deleteRow.Length;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         public IEnumerable<Order> GetAll()
         {
             try
@@ -95,7 +170,15 @@ namespace ADO_NET_Task.Repositories
             }
         }
 
-        public IEnumerable<Order> GetAllWithFilter(string storedProcedure, Func<Order, bool>? filter = default)
+        /// <summary>
+        /// Fetch orders filtering by some condition
+        /// </summary>
+        /// <param name="storedProcedure">Name of stored procedure</param>
+        /// <param name="filter">Filtering condition</param>
+        /// <returns>List of orders which are filtered by some condition</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="Exception"></exception>
+        public IEnumerable<Order> GetAllWithFilter(string storedProcedure, Func<Order, bool> filter)
         {
 
             try

@@ -103,7 +103,9 @@ namespace ADO_NET_ConsoleApp
 
             _ = AddStoredProcedure(proc);
 
-            var ordersByUsingProc = orderRepository.GetAllWithFilter("sp_GetOrders", x => x.Status == Status.Done);
+            var ordersFiltered = orderRepository.GetAllWithFilter("sp_GetOrders", x => x.Status == Status.Done);
+
+            var numberOfDeletedOrders = orderRepository.DeleteInBulkWithFilter("sp_GetOrders", "");
         }
 
         private static async Task AddStoredProcedure(string storedProcedure)
