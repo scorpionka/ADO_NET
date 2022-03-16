@@ -87,6 +87,27 @@ namespace ADO_NET_ConsoleApp
             //orderRepository.Update(order);
 
             var orders = orderRepository.GetAll();
+
+            string proc = @"CREATE PROCEDURE [dbo].[sp_GetOrders]
+                                AS
+                                    SELECT * FROM Orders 
+                                GO";
+
+            _ = AddStoredProcedure(proc);
+
+            var ordersByUsingProc = orderRepository.GetAllWithFilter("sp_GetOrders");
+        }
+
+        private static async Task AddStoredProcedure(string storedProcedure)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                SqlCommand command = new SqlCommand(storedProcedure, connection);
+
+                await command.ExecuteNonQueryAsync();
+            }
         }
     }
 }

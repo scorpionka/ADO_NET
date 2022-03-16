@@ -84,6 +84,11 @@ namespace ADO_NET_Task.Repositories
             return products;
         }
 
+        public IEnumerable<Product> GetAllWithFilter(string storedProcedure)
+        {
+            throw new NotImplementedException();
+        }
+
         public Product? GetById(object id)
         {
             using (var connection = providerFactory.CreateConnection())

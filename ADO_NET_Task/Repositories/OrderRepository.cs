@@ -94,6 +94,65 @@ namespace ADO_NET_Task.Repositories
             }
         }
 
+        public IEnumerable<Order> GetAllWithFilter(string storedProcedure)
+        {
+            try
+            {
+                using (var connection = providerFactory.CreateConnection())
+                {
+                    if (connection is null)
+                    {
+                        throw new ArgumentNullException(nameof(connection));
+                    }
+
+                    connection.ConnectionString = connectionString;
+
+                    using (connection)
+                    {
+                        DbCommand? command = providerFactory.CreateCommand();
+
+                        if (command is null)
+                        {
+                            throw new ArgumentNullException(nameof(command));
+                        }
+
+                        command.CommandText = storedProcedure;
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Connection = connection;
+
+                        DbDataAdapter? adapter = providerFactory.CreateDataAdapter();
+
+                        if (adapter is null)
+                        {
+                            throw new ArgumentNullException(nameof(adapter));
+                        }
+
+                        adapter.SelectCommand = command;
+
+                        DataTable table = new DataTable("Orders");
+                        adapter.Fill(table);
+
+                        var orders = (from DataRow row in table.Rows
+                                      select new Order()
+                                      {
+                                          Id = Convert.ToInt32(row["Id"]),
+                                          Status = ConvertStrToEnum(row["Status"].ToString() ?? string.Empty),
+                                          CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                                          UpdatedDate = Convert.ToDateTime(row["UpdatedDate"]),
+                                          ProductId = Convert.ToInt32(row["ProductId"]),
+                                      })
+                                  .ToList();
+
+                        return orders;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         public Order? GetById(object id)
         {
             try
