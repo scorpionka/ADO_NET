@@ -11,7 +11,7 @@ namespace ADO_NET_ConsoleApp
 {
     public class Program
     {
-        private const string connectionString = "Server=(localdb)\\mssqllocaldb;Database=master;Trusted_Connection=True;";
+        private const string connectionString = "Server=(localdb)\\mssqllocaldb;Database=adonetdb;Trusted_Connection=True;";
 
         static async Task Main()
         {
@@ -27,19 +27,27 @@ namespace ADO_NET_ConsoleApp
 
                 //command.CommandText = "CREATE DATABASE adonetdb";
 
-                //command.CommandText = "CREATE TABLE Products (Id INT PRIMARY KEY IDENTITY, " +
-                //    "Name NVARCHAR(100) NOT NULL, " +
-                //    "Description NVARCHAR(100) NOT NULL, " +
-                //    "Weight INT NOT NULL, " +
-                //    "Height INT NOT NULL, " +
-                //    "Width INT NOT NULL, " +
-                //    "Length INT NOT NULL)";
+                //command.CommandText = @"USE adonetdb;
+                //                        CREATE TABLE Products
+                //                            (
+                //                             Id INT PRIMARY KEY IDENTITY,
+                //                             Name NVARCHAR(100) NOT NULL,
+                //                             Description NVARCHAR(100) NOT NULL,
+                //                             Weight INT NOT NULL,
+                //                             Height INT NOT NULL,
+                //                             Width INT NOT NULL,
+                //                             Length INT NOT NULL
+                //                            )";
 
-                //command.CommandText = "CREATE TABLE Orders (Id INT PRIMARY KEY IDENTITY, " +
-                //    "Status NVARCHAR(30) NOT NULL, " +
-                //    "CreatedDate DATE NOT NULL, " +
-                //    "UpdatedDate DATE NOT NULL, " +
-                //    "ProductId INT NOT NULL REFERENCES Products (Id))";
+                //command.CommandText = @"USE adonetdb;
+                //                        CREATE TABLE Orders
+                //                            (
+                //                             Id INT PRIMARY KEY IDENTITY,
+                //                             Status NVARCHAR(30) NOT NULL,
+                //                             CreatedDate DATE NOT NULL,
+                //                             UpdatedDate DATE NOT NULL,
+                //                             ProductId INT NOT NULL REFERENCES Products (Id)
+                //                            )";
 
                 //command.Connection = connection;
 
@@ -95,7 +103,7 @@ namespace ADO_NET_ConsoleApp
 
             _ = AddStoredProcedure(proc);
 
-            var ordersByUsingProc = orderRepository.GetAllWithFilter("sp_GetOrders");
+            var ordersByUsingProc = orderRepository.GetAllWithFilter("sp_GetOrders", x => x.Status == Status.Done);
         }
 
         private static async Task AddStoredProcedure(string storedProcedure)

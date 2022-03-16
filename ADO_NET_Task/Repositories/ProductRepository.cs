@@ -30,7 +30,9 @@ namespace ADO_NET_Task.Repositories
 
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "DELETE FROM dbo.Products WHERE dbo.Products.Id = @id";
+                    command.CommandText = @"USE adonetdb;
+                                            DELETE FROM Products
+                                            WHERE Products.Id = @id";
                     command.CommandType = CommandType.Text;
 
                     CreateCommandParameter(id, "id", command);
@@ -56,8 +58,10 @@ namespace ADO_NET_Task.Repositories
 
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT Id, Name, Description, " +
-                      "Weight, Height, Width, Length FROM dbo.Products";
+                    command.CommandText = @"USE adonetdb;
+                                            SELECT Id, Name, Description,
+                                            Weight, Height, Width, Length
+                                            FROM Products";
                     command.CommandType = CommandType.Text;
 
                     using (var reader = command.ExecuteReader())
@@ -84,9 +88,9 @@ namespace ADO_NET_Task.Repositories
             return products;
         }
 
-        public IEnumerable<Product> GetAllWithFilter(string storedProcedure)
+        public IEnumerable<Product> GetAllWithFilter(string storedProcedure, Func<Product, bool> filter)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(); //not required according to the conditions of the task
         }
 
         public Product? GetById(object id)
@@ -103,8 +107,11 @@ namespace ADO_NET_Task.Repositories
 
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT Id, Name, Description, " +
-                      "Weight, Height, Width, Length FROM dbo.Products WHERE dbo.Products.Id = @id";
+                    command.CommandText = @"USE adonetdb;
+                                            SELECT Id, Name, Description,
+                                            Weight, Height, Width, Length
+                                            FROM Products
+                                            WHERE Products.Id = @id";
                     command.CommandType = CommandType.Text;
 
                     CreateCommandParameter(id, "id", command);
@@ -147,8 +154,25 @@ namespace ADO_NET_Task.Repositories
 
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "INSERT INTO dbo.Products(Name, Description, Weight, Height, Width, Length) " +
-                        "VALUES (@name, @description, @weight, @height, @width, @length)";
+                    command.CommandText = @"USE adonetdb;
+                                            INSERT INTO Products
+                                            (
+                                                Name,
+                                                Description,
+                                                Weight,
+                                                Height,
+                                                Width,
+                                                Length
+                                            )
+                                            VALUES
+                                            (
+                                                @name,
+                                                @description,
+                                                @weight,
+                                                @height,
+                                                @width,
+                                                @length
+                                             )";
                     command.CommandType = CommandType.Text;
 
                     CreateCommandParameter(obj.Name ?? "NotSet", "name", command);
@@ -177,9 +201,11 @@ namespace ADO_NET_Task.Repositories
 
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "UPDATE dbo.Products SET Name=@name, Description=@description, " +
-                        "Weight=@weight, Height=@height, Width=@width, Length=@length " +
-                        "WHERE dbo.Products.Id = @id";
+                    command.CommandText = @"USE adonetdb;
+                                            UPDATE Products
+                                            SET Name=@name, Description=@description, Weight=@weight,
+                                                Height=@height, Width=@width, Length=@length
+                                            WHERE Products.Id = @id";
                     command.CommandType = CommandType.Text;
 
                     CreateCommandParameter(obj.Id, "id", command);

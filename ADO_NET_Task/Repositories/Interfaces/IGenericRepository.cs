@@ -7,6 +7,6 @@
         void Insert(T obj);
         void Update(T obj);
         void Delete(object id);
-        IEnumerable<T> GetAllWithFilter(string storedProcedure);
+        IEnumerable<T> GetAllWithFilter(string storedProcedure, Func<T, bool> filter);
     }
 }

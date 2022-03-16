@@ -8,7 +8,8 @@ namespace ADO_NET_Task.Repositories
 {
     public class OrderRepository : IGenericRepository<Order>
     {
-        const string queryString = "SELECT * FROM dbo.Orders";
+        const string queryString = @"USE adonetdb;
+                                     SELECT * FROM dbo.Orders";
         private readonly DbProviderFactory providerFactory;
         private readonly string connectionString;
 
@@ -94,8 +95,9 @@ namespace ADO_NET_Task.Repositories
             }
         }
 
-        public IEnumerable<Order> GetAllWithFilter(string storedProcedure)
+        public IEnumerable<Order> GetAllWithFilter(string storedProcedure, Func<Order, bool>? filter = default)
         {
+
             try
             {
                 using (var connection = providerFactory.CreateConnection())
@@ -141,7 +143,8 @@ namespace ADO_NET_Task.Repositories
                                           UpdatedDate = Convert.ToDateTime(row["UpdatedDate"]),
                                           ProductId = Convert.ToInt32(row["ProductId"]),
                                       })
-                                  .ToList();
+                                      .Where(filter ?? (x => x.Id > 0))
+                                      .ToList();
 
                         return orders;
                     }
