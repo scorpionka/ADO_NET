@@ -5,7 +5,9 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ADO_NET_Task", "ADO_NET_Task\ADO_NET_Task.csproj", "{AD9790EF-35B4-4EF2-8C32-E0E032F2DC02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADO_NET_ConsoleApp", "ADO_NET_ConsoleApp\ADO_NET_ConsoleApp.csproj", "{E386A897-5BDF-489C-ACA1-6D1C54D7B129}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ADO_NET_ConsoleApp", "ADO_NET_ConsoleApp\ADO_NET_ConsoleApp.csproj", "{E386A897-5BDF-489C-ACA1-6D1C54D7B129}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADO_NET_Task_Tests", "ADO_NET_Task_Tests\ADO_NET_Task_Tests.csproj", "{F8EC9769-58AE-4793-95E7-B69D8E84EDAE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{E386A897-5BDF-489C-ACA1-6D1C54D7B129}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E386A897-5BDF-489C-ACA1-6D1C54D7B129}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E386A897-5BDF-489C-ACA1-6D1C54D7B129}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8EC9769-58AE-4793-95E7-B69D8E84EDAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8EC9769-58AE-4793-95E7-B69D8E84EDAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8EC9769-58AE-4793-95E7-B69D8E84EDAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8EC9769-58AE-4793-95E7-B69D8E84EDAE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
