@@ -2,10 +2,10 @@
 #pragma warning disable CS8618
 
 using ADO_NET_Task.Models;
-using ADO_NET_Task.Repositories;
 using ADO_NET_Task.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace ADO_NET_Task_Tests
@@ -20,31 +20,82 @@ namespace ADO_NET_Task_Tests
         [Test]
         public void GetAllProductsTest()
         {
-            IGenericRepository<Product> productRepository = Mock.Of<IGenericRepository<Product>>(x => x.GetAll() == new List<Product>());
+            var products = new List<Product>();
+            products.Add(new Product());
 
-            var sequence = productRepository.GetAll();
+            IGenericRepository<Product> productRepositoryStub = Mock.Of<IGenericRepository<Product>>(x => x.GetAll() == products);
 
-            Assert.That(sequence, Is.EqualTo(new List<Product>()));
+            var sequence = productRepositoryStub.GetAll();
+
+            Assert.That(sequence, Is.EqualTo(products));
         }
 
         [Test]
         public void GetProductByIdTest()
         {
             var product = new Product();
-            IGenericRepository<Product> productRepository =
+            IGenericRepository<Product> productRepositoryStub =
                 Mock.Of<IGenericRepository<Product>>(x => x.GetById(It.IsAny<int>()) == product);
 
-            var actual = productRepository.GetById(5);
+            var actual = productRepositoryStub.GetById(5);
 
             Assert.That(actual, Is.EqualTo(product));
         }
 
-        //IEnumerable<T> GetAll();
-        //T? GetById(object id);
-        //void Insert(T obj);
-        //void Update(T obj);
-        //void Delete(object id);
-        //IEnumerable<T> GetAllWithFilter(string storedProcedure, Func<T, bool> filter);
-        //int DeleteInBulkWithFilter(string storedProcedure, string filter);
+        [Test]
+        public void GetAllOrdersTest()
+        {
+            var orders = new List<Order>();
+            orders.Add(new Order());
+
+            IGenericRepository<Order> orderRepositoryStub = Mock.Of<IGenericRepository<Order>>(x => x.GetAll() == orders);
+
+            var sequence = orderRepositoryStub.GetAll();
+
+            Assert.That(sequence, Is.EqualTo(orders));
+        }
+
+        [Test]
+        public void GetOrderByIdTest()
+        {
+            var order = new Order();
+            IGenericRepository<Order> orderRepositoryStub =
+                Mock.Of<IGenericRepository<Order>>(x => x.GetById(It.IsAny<int>()) == order);
+
+            var actual = orderRepositoryStub.GetById(5);
+
+            Assert.That(actual, Is.EqualTo(order));
+        }
+
+        [Test]
+        public void GetAllOrdersWithFilterTest()
+        {
+            List<Order> orders = new List<Order>();
+            orders.Add(new Order());
+
+            var orderRepositoryStub = new Mock<IGenericRepository<Order>>();
+
+            orderRepositoryStub
+                .Setup(x => x.GetAllWithFilter(It.IsAny<string>(), It.IsAny<Func<Order, bool>>()))
+                .Returns(orders);
+
+            var orderRepository = orderRepositoryStub.Object;
+
+            Assert.That(orderRepository.GetAllWithFilter("anything", x => x.Id > 7), Is.EqualTo(orders));
+        }
+
+        [Test]
+        public void DeleteOrdersInBulkWithFilterTest()
+        {
+            var orderRepositoryStub = new Mock<IGenericRepository<Order>>();
+
+            orderRepositoryStub
+                .Setup(x => x.DeleteInBulkWithFilter(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(5);
+
+            var orderRepository = orderRepositoryStub.Object;
+
+            Assert.That(orderRepository.DeleteInBulkWithFilter("anything", "anything"), Is.EqualTo(5));
+        }
     }
 }
