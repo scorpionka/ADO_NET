@@ -1,5 +1,7 @@
 ﻿using ADO_NET_Task.Models;
 using ADO_NET_Task.Repositories.Interfaces;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 

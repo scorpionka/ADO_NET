@@ -1,4 +1,7 @@
-﻿namespace ADO_NET_Task.Repositories.Interfaces
+﻿using System;
+using System.Collections.Generic;
+
+namespace ADO_NET_Task.Repositories.Interfaces
 {
     public interface IGenericRepository<T> where T : class
     {

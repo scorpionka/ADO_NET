@@ -1,8 +1,11 @@
 ﻿using ADO_NET_Task.Enums;
 using ADO_NET_Task.Models;
 using ADO_NET_Task.Repositories.Interfaces;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 
 namespace ADO_NET_Task.Repositories
 {
@@ -149,8 +152,8 @@ namespace ADO_NET_Task.Repositories
                         DataTable table = new DataTable("Orders");
                         adapter.Fill(table);
 
-                        var orders = (from DataRow row in table.Rows
-                                  select new Order()
+                        var orders = (from DataRow row in table.Rows.Cast<DataRow>()
+                                      select new Order()
                                   {
                                       Id = Convert.ToInt32(row["Id"]),
                                       Status = ConvertStrToEnum(row["Status"].ToString() ?? string.Empty),
@@ -217,7 +220,7 @@ namespace ADO_NET_Task.Repositories
                         DataTable table = new DataTable("Orders");
                         adapter.Fill(table);
 
-                        var orders = (from DataRow row in table.Rows
+                        var orders = (from DataRow row in table.Rows.Cast<DataRow>()
                                       select new Order()
                                       {
                                           Id = Convert.ToInt32(row["Id"]),
@@ -259,8 +262,8 @@ namespace ADO_NET_Task.Repositories
                         DataTable table = new DataTable("Orders");
                         adapter.Fill(table);
 
-                        var order = (from DataRow row in table.Rows
-                                 select new Order()
+                        var order = (from DataRow row in table.Rows.Cast<DataRow>()
+                                     select new Order()
                                  {
                                      Id = Convert.ToInt32(row["Id"]),
                                      Status = ConvertStrToEnum(row["Status"].ToString() ?? string.Empty),
